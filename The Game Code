@@ -132,7 +132,7 @@ def game_loop():
 			astroid_startY = 0 - astroid_height
 			astroid_startX = random.randrange(0, display_width)
 
-		if y < astroid_startY + astroid_height:
+		if y < astroid_startY + astroid_height and y > astroid_startY:
 			print 'y crossover'
 
 			if x > astroid_startX and x < astroid_startX + astroid_width or x + ship_size > astroid_startX and x + ship_size < astroid_startX + astroid_width:

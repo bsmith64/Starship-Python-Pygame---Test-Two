@@ -1,0 +1,152 @@
+import pygame
+import time
+import random
+
+pygame.init()
+
+# Game Surface Dimensions
+display_width = 800
+display_height = 600
+
+# Colors Definition
+white = (255,255,255)
+black = (0,0,0)
+red = (255,0,0)
+green = (0,255,0)
+blue = (0,0,255)
+
+# Game Surface
+gameDisplay = pygame.display.set_mode((display_width, display_height))
+
+starshipImg = pygame.image.load('starshipOne.png')
+astroidImg = pygame.image.load('astroid-1.png')
+
+# Size of the ship in pixels
+ship_size = 80
+astroid_size = 80
+
+def ship(x,y):
+	gameDisplay.blit(starshipImg, (x,y))
+
+def astroid(x,y):
+	gameDisplay.blit(astroidImg, (x,y))
+
+	
+
+# Creating the detail paramaters of text and the encapsulating rectangle
+def text_object(text,font):
+	textSurface = font.render(text, True, white)
+	return textSurface, textSurface.get_rect()
+
+# Define instence of a message-to-screen.
+def message_to_screen(text):
+	largeFont = pygame.font.SysFont('monospace', 30)
+	textSurf, textRect = text_object(text, largeFont)
+	textRect.center = ((display_width / 2), (display_height / 2))
+	gameDisplay.blit(textSurf, textRect)
+
+	pygame.display.update()
+	time.sleep(2)
+	game_loop()
+
+# In the instence os crash - display this message
+def crash():
+	message_to_screen('You crashed.')
+
+
+# EVENT HANDELING LOOP / GAME LOOP -- EVENT HANDELING LOOP / GAME LOOP -- EVENT HANDELING LOOP / GAME LOOP
+def game_loop():
+
+	x = (display_width * 0.45)
+	y = (display_height * 0.8)
+
+	# Coordinates placeholder
+	x_change = 0
+	y_change = 0
+
+	# Movement Speed
+	movement = 10
+
+	astroid_startX = random.randrange(0, display_width)
+	astroid_startY = -500
+	speed = 15
+	astroid_width = 80
+	astroid_height = 80
+
+	# Defines the game FPS
+	clock = pygame.time.Clock()
+
+	gameExit = False
+	
+	while not gameExit:
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+
+			# LEFT and RIGHT Keydown movement
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_LEFT:
+					x_change = -movement
+				elif event.key == pygame.K_RIGHT:
+					x_change = movement
+
+			# CONTINUAL HOLD MOVEMENT (LEFT AND RIGHT)
+			if event.type == pygame.KEYUP:
+				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+					x_change = 0
+
+			# UP and DOWN Keydown Movement
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_UP:
+					y_change = -movement
+				elif event.key == pygame.K_DOWN:
+					y_change = movement
+
+
+			if event.type == pygame.KEYUP:
+				if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+					y_change = 0
+			
+		# Updates Left and Right Coordinate Position
+		x += x_change
+		y += y_change
+
+
+		# Fill the background color
+		gameDisplay.fill(black)
+
+		ship(x,y)
+
+		# GAME BOUNDARIES
+		if x > display_width - ship_size or x < 0 or y > display_height - ship_size or y < 0:
+			crash()
+
+		# Generate Astroids at location - second line moves them down the screen at defined speed.
+		astroid(astroid_startX, astroid_startY)
+		astroid_startY += speed
+
+		# Astroid logic that regenerates new astroids after the have left the screen on x axis
+		if astroid_startY > display_height:
+			astroid_startY = 0 - astroid_height
+			astroid_startX = random.randrange(0, display_width)
+
+		if y < astroid_startY + astroid_height:
+			print 'y crossover'
+
+			if x > astroid_startX and x < astroid_startX + astroid_width or x + ship_size > astroid_startX and x + ship_size < astroid_startX + astroid_width:
+				print 'x crossover'
+				crash()
+
+
+		# Updates / redraws the game display
+		pygame.display.update()
+
+		clock.tick(30)
+
+		# END GAME LOOP //  END GAME LOOP //  END GAME LOOP //  END GAME LOOP //  END GAME LOOP
+
+game_loop()
+pygame.quit()
+quit()
